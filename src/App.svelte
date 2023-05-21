@@ -1,6 +1,6 @@
 <script lang="ts">
-  import GoogleLoginButton from './GoogleLoginButton.svelte';
-  import Layout from './Layout.svelte';
+  import GoogleLoginButton from './lib/components/GoogleLoginButton.svelte';
+  import Layout from './lib/layouts/Layout.svelte';
 </script>
 
 <Layout>

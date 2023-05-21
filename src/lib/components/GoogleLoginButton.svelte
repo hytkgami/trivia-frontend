@@ -1,5 +1,5 @@
 <script lang="ts">
-  import googleIcon from './assets/btn_google_light_normal_ios.svg';
+  import googleIcon from '../../assets/btn_google_light_normal_ios.svg';
 </script>
 
 <a
