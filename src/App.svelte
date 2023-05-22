@@ -1,6 +1,24 @@
 <script lang="ts">
   import GoogleLoginButton from './lib/components/GoogleLoginButton.svelte';
   import Layout from './lib/layouts/Layout.svelte';
+  import { onAuthStateChanged } from 'firebase/auth';
+  import { onMount } from 'svelte';
+  import { auth } from './lib/plugins/firebase/firebase';
+  import { user } from './lib/stores/user';
+
+  const authSubscriber = () => {
+    onAuthStateChanged(auth, async (userAuthData) => {
+      if (userAuthData) {
+        user.set(userAuthData);
+      } else {
+        user.set(null);
+      }
+    });
+  };
+
+  onMount(async () => {
+    authSubscriber();
+  });
 </script>
 
 <Layout>
