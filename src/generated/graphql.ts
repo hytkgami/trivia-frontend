@@ -1,6 +1,6 @@
 import client from "undefined";
 import type {
-        
+        SubscriptionOptions
       } from "@apollo/client";
 import { readable } from "svelte/store";
 import type { Readable } from "svelte/store";
@@ -202,4 +202,32 @@ export type User = Node & {
   name: Scalars['String']['output'];
 };
 
+export type CurrentQuestionSubscriptionVariables = Exact<{
+  lobbyId: Scalars['ID']['input'];
+}>;
 
+
+export type CurrentQuestionSubscription = { __typename?: 'Subscription', currentQuestion: { __typename?: 'Question', id: string, title: string, orderNumber: number, score: number } };
+
+
+export const CurrentQuestionDoc = gql`
+    subscription CurrentQuestion($lobbyId: ID!) {
+  currentQuestion(lobbyId: $lobbyId) {
+    id
+    title
+    orderNumber
+    score
+  }
+}
+    `;
+export const CurrentQuestion = (
+            options: Omit<SubscriptionOptions<CurrentQuestionSubscriptionVariables>, "query">
+          ) => {
+            const q = client.subscribe<CurrentQuestionSubscription, CurrentQuestionSubscriptionVariables>(
+              {
+                query: CurrentQuestionDoc,
+                ...options,
+              }
+            )
+            return q;
+          }
