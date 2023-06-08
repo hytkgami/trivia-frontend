@@ -1,10 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  Auth,
+  GoogleAuthProvider,
+  getAuth
+} from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import './App.css';
+import reactLogo from './assets/react.svg';
+import './lib/firebase';
+import viteLogo from '/vite.svg';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [auth, setAuth] = useState<Auth | null>(null);
+  const [provider, setProvider] = useState<GoogleAuthProvider | null>(null);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (provider === null) {
+      const googleProvider = new GoogleAuthProvider();
+      console.log('set provider')
+      setProvider(googleProvider);
+    }
+  }, [provider]);
+
+  useEffect(() => {
+    if (provider !== null && auth === null) {
+      const gotAuth = getAuth()
+      setAuth(gotAuth);
+      console.log('set auth', gotAuth);
+      console.log(auth);
+    }
+  }, [auth, provider]);
 
   return (
     <>
@@ -29,7 +54,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
