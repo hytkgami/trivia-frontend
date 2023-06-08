@@ -1,8 +1,0 @@
-subscription CurrentQuestion($lobbyId: ID!) {
-  currentQuestion(lobbyId: $lobbyId) {
-    id
-    title
-    orderNumber
-    score
-  }
-}
