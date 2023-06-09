@@ -1,7 +1,8 @@
 import {
   Auth,
   GoogleAuthProvider,
-  getAuth
+  getAuth,
+  signInWithRedirect
 } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import './App.css';
@@ -17,17 +18,13 @@ function App() {
   useEffect(() => {
     if (provider === null) {
       const googleProvider = new GoogleAuthProvider();
-      console.log('set provider')
       setProvider(googleProvider);
     }
   }, [provider]);
 
   useEffect(() => {
     if (provider !== null && auth === null) {
-      const gotAuth = getAuth()
-      setAuth(gotAuth);
-      console.log('set auth', gotAuth);
-      console.log(auth);
+      setAuth(getAuth());
     }
   }, [auth, provider]);
 
