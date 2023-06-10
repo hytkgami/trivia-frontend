@@ -5,15 +5,18 @@ interface Props {
   children: ReactNode;
 }
 
-type State = User | null;
-type ContextProps = {
-  currentUser: State;
+interface ContextProps {
+  currentUser: User | null;
   loading: boolean;
-};
-export const AuthContext = createContext<ContextProps>({ currentUser: null, loading: true });
+}
+
+export const AuthContext = createContext<ContextProps>({
+  currentUser: null,
+  loading: true,
+});
 
 export const AuthProvider = ({ children }: Props) => {
-  const [currentUser, setCurrentUser] = useState<State>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [auth, setAuth] = useState<Auth | null>(null);
 
