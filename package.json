@@ -14,6 +14,7 @@
     "@apollo/client": "^3.7.15",
     "firebase": "^9.22.1",
     "graphql": "^16.6.0",
+    "graphql-ws": "^5.13.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
