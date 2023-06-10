@@ -1,16 +1,17 @@
 import { NavBar } from './components/NavBar';
+import { GraphQLClientProvider } from './contexts/ApolloProvider';
 import { AuthProvider } from './contexts/AuthProvider';
-import { UrqlProvier } from './contexts/UrqlProvider';
 import './lib/firebase';
+import { LobbyPage } from './pages/Lobby';
 
 function App() {
   return (
     <>
       <AuthProvider>
-        <UrqlProvier>
+        <GraphQLClientProvider>
           <NavBar />
-          <div></div>
-        </UrqlProvier>
+          <LobbyPage />
+        </GraphQLClientProvider>
       </AuthProvider>
     </>
   );
