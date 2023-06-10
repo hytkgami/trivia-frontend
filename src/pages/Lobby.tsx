@@ -24,10 +24,34 @@ export const LobbyPage = () => {
   if (loading) return <div>Fetching</div>;
   if (!data) return <div>No data</div>;
   return (
-    <div>
-      <h1>{data.currentQuestion.title}</h1>
-      <p>{data.currentQuestion.orderNumber}</p>
-      <p>{data.currentQuestion.orderNumber}</p>
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8h-full">
+      <div className="relative px-6 pt-14 lg:px-8">
+        <div
+          className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+          aria-hidden="true"
+        >
+          <div
+            className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+            style={{
+              clipPath:
+                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+            }}
+          />
+        </div>
+        <div className="flex flex-col gap-2 lg:gap-8">
+          <div className="bg-white bg-opacity-90 text-gray-700 lg:px-12 lg:py-24 md:px-8 md:py-18 sm:px-4 sm:py-6 xs:px-1 xs:py-4 rounded-lg">
+            <h1 className="text-center lg:text-4xl md:text-2xl sm:text-xl font-bold">
+              {data.currentQuestion.title}
+            </h1>
+          </div>
+          <div className="w-full lg:w-2/3 md:w-2/3 sm:w-4/5 mx-auto divide-y bg-white bg-opacity-70 rounded-lg p-1">
+            <textarea className="rounded-lg caret-current w-full resize-y lg:p-4 md:p-2 xs:p-1"></textarea>
+          </div>
+          <button className="mx-auto rounded-full text-white py-2 px-6 bg-gradient-to-r from-gray-800 to-gray-700 hover:bg-gray-600 hover:shadow-sm shadow-md md:text-base xs:text-xs shadow-gray-400">
+            回答を送信する
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
