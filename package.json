@@ -16,7 +16,9 @@
     "graphql": "^16.6.0",
     "graphql-ws": "^5.13.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router": "^6.12.1",
+    "react-router-dom": "^6.12.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "4.0.1",

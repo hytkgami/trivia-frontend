@@ -1,3 +1,4 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { NavBar } from './components/NavBar';
 import { GraphQLClientProvider } from './contexts/ApolloProvider';
 import { AuthProvider } from './contexts/AuthProvider';
@@ -8,13 +9,18 @@ import { LobbyPage } from './pages/Lobby';
 function App() {
   return (
     <>
-      <AuthProvider>
-        <GraphQLClientProvider>
-          <NavBar />
-          <LobbiesPage />
-          <LobbyPage />
-        </GraphQLClientProvider>
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <GraphQLClientProvider>
+            <NavBar />
+            <Routes>
+              <Route path="/lobbies" element={<LobbiesPage />} />
+              <Route path='/lobbies/:id' element={<LobbyPage />}>
+              </Route>
+            </Routes>
+          </GraphQLClientProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </>
   );
 }

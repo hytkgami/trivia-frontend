@@ -3,6 +3,8 @@ import { Spinner } from '../components/Spinner';
 import { Chat } from '../components/icons/Chat';
 import { graphql } from '../generated';
 import { useTextArea } from '../hooks/useInput';
+import { useParams } from 'react-router';
+import { useEffect } from 'react';
 
 const CurrentQuestionSubscriptionDocument = graphql(`
   subscription CurrentQuestionSubscription($lobbyId: ID!) {
@@ -27,11 +29,16 @@ const CreateAnswerMutationDocument = graphql(`
 `);
 
 export const LobbyPage = () => {
+  const { id } = useParams<{ id: string }>();
+  useEffect(() => {
+    // TODO: navigate to /lobbies if no id and show error
+    if (!id) return;
+  }, [id]);
   const { data, loading } = useSubscription(
     CurrentQuestionSubscriptionDocument,
     {
       variables: {
-        lobbyId: '01H2MHTFVN9CCGQWJRD0E49C9H',
+        lobbyId: id!,
       },
     }
   );

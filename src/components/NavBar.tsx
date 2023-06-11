@@ -5,6 +5,7 @@ import { graphql } from '../generated';
 import { useMutation } from '@apollo/client';
 import { useContext, useEffect, useReducer } from 'react';
 import { AuthContext } from '../contexts/AuthProvider';
+import { Link } from 'react-router-dom';
 
 const SignInMutationDocument = graphql(`
   mutation SignIn($name: String!) {
@@ -44,23 +45,22 @@ export const NavBar = () => {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <a
-                  href="#"
+                <Link
+                  to="/"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium tracking-wide"
                 >
                   🧠 Trivia
-                </a>
+                </Link>
               </div>
               <div className="hidden md:block">
-                {/* TODO: list items */}
-                {/* <div className="ml-10 flex items-baseline space-x-4">
-                  <a
-                    href="#"
+                <div className="ml-10 flex items-baseline space-x-4">
+                  <Link
+                    to="/lobbies"
                     className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                   >
                     Lobbies
-                  </a>
-                </div> */}
+                  </Link>
+                </div>
               </div>
             </div>
             <div className="hidden md:block">
@@ -157,12 +157,12 @@ export const NavBar = () => {
 
         <div className="md:hidden" id="mobile-menu" hidden={!toggleIsOpen}>
           <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-            {/* <a
-              href="#"
+            <Link
+              to="/lobbies"
               className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
             >
               Lobbies
-            </a> */}
+            </Link>
           </div>
           {loading || signInLoading ? (
             <Spinner />
