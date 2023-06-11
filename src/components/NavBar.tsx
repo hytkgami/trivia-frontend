@@ -19,14 +19,9 @@ const SignInMutationDocument = graphql(`
 `);
 
 export const NavBar = () => {
-  const [toggleIsOpen, toggle] = useReducer(
-    (toggleIsOpen) => !toggleIsOpen,
-    false
-  );
+  const [toggleIsOpen, toggle] = useReducer((toggleIsOpen) => !toggleIsOpen, false);
   const { currentUser, loading } = useContext(AuthContext);
-  const [signIn, { loading: signInLoading }] = useMutation(
-    SignInMutationDocument
-  );
+  const [signIn, { loading: signInLoading }] = useMutation(SignInMutationDocument);
   useEffect(() => {
     async () => {
       if (currentUser !== null) {
@@ -84,16 +79,11 @@ export const NavBar = () => {
                             src={currentUser.photoURL || undefined}
                             alt={`${currentUser.displayName}'s photo'`}
                           />
-                          <p className="text-gray-300">
-                            {currentUser.displayName}
-                          </p>
+                          <p className="text-gray-300">{currentUser.displayName}</p>
                         </button>
                       </div>
                     ) : (
-                      <SignInWithGoogleButton
-                        afterOnClick={toggle}
-                        className="text-white"
-                      />
+                      <SignInWithGoogleButton afterOnClick={toggle} className="text-white" />
                     )}
                     {toggleIsOpen ? (
                       <div
@@ -130,11 +120,7 @@ export const NavBar = () => {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
                 <svg
                   className="hidden h-6 w-6"
@@ -144,11 +130,7 @@ export const NavBar = () => {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
@@ -170,19 +152,11 @@ export const NavBar = () => {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src={currentUser.photoURL || undefined}
-                    alt=""
-                  />
+                  <img className="h-10 w-10 rounded-full" src={currentUser.photoURL || undefined} alt="" />
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium leading-none text-white">
-                    {currentUser.displayName}
-                  </div>
-                  <div className="text-sm font-medium leading-none text-gray-400">
-                    {currentUser.email}
-                  </div>
+                  <div className="text-base font-medium leading-none text-white">{currentUser.displayName}</div>
+                  <div className="text-sm font-medium leading-none text-gray-400">{currentUser.email}</div>
                 </div>
               </div>
               <div className="mt-3 space-y-1 px-2">
@@ -190,10 +164,7 @@ export const NavBar = () => {
               </div>
             </div>
           ) : (
-            <SignInWithGoogleButton
-              afterOnClick={toggle}
-              className="text-white"
-            />
+            <SignInWithGoogleButton afterOnClick={toggle} className="text-white" />
           )}
         </div>
       </nav>

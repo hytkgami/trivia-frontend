@@ -34,17 +34,13 @@ export const LobbyPage = () => {
     // TODO: navigate to /lobbies if no id and show error
     if (!id) return;
   }, [id]);
-  const { data, loading } = useSubscription(
-    CurrentQuestionSubscriptionDocument,
-    {
-      variables: {
-        lobbyId: id!,
-      },
-    }
-  );
+  const { data, loading } = useSubscription(CurrentQuestionSubscriptionDocument, {
+    variables: {
+      lobbyId: id!,
+    },
+  });
   const [value, resetValue] = useTextArea('');
-  const [createAnswer, { data: answerData, loading: sending, error }] =
-    useMutation(CreateAnswerMutationDocument);
+  const [createAnswer, { data: answerData, loading: sending, error }] = useMutation(CreateAnswerMutationDocument);
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!data) return;
@@ -76,9 +72,7 @@ export const LobbyPage = () => {
         </div>
         <div className="flex flex-col gap-2 lg:gap-8">
           <div className="bg-white bg-opacity-90 text-gray-700 lg:px-12 lg:py-24 md:px-8 md:py-18 sm:px-4 sm:py-6 xs:px-1 xs:py-4 rounded-lg">
-            <h1 className="text-center lg:text-4xl md:text-2xl sm:text-xl font-bold">
-              {data.currentQuestion.title}
-            </h1>
+            <h1 className="text-center lg:text-4xl md:text-2xl sm:text-xl font-bold">{data.currentQuestion.title}</h1>
           </div>
           <form
             className="w-full lg:w-2/3 md:w-2/3 sm:w-4/5 mx-auto bg-white bg-opacity-70 rounded-lg p-1 pb-2 flex flex-col gap-2 items-center"
@@ -90,11 +84,7 @@ export const LobbyPage = () => {
               placeholder="ここに回答を入力してください"
               required
             ></textarea>
-            {error ? (
-              <small className="text-sm text-red-500">
-                エラーが発生しました ({error.message})
-              </small>
-            ) : null}
+            {error ? <small className="text-sm text-red-500">エラーが発生しました ({error.message})</small> : null}
             <button
               className="rounded-full flex gap-2 items-center text-white py-2 px-6 bg-gradient-to-r from-gray-800 to-gray-700 hover:bg-gray-600 hover:shadow-sm shadow-md md:text-base xs:text-xs shadow-gray-400"
               disabled={sending}
@@ -102,11 +92,7 @@ export const LobbyPage = () => {
               {sending ? <Spinner /> : <Chat />}
               回答を送信する
             </button>
-            {answerData ? (
-              <small className="text-sm text-green-500">
-                回答を送信しました
-              </small>
-            ) : null}
+            {answerData ? <small className="text-sm text-green-500">回答を送信しました</small> : null}
           </form>
         </div>
       </div>

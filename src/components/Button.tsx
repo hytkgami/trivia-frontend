@@ -14,7 +14,7 @@ const Button = (props: ButtonProps) => {
         {props.title}
       </a>
     </div>
-  )
-}
+  );
+};
 
 export { Button };

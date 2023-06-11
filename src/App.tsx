@@ -16,8 +16,8 @@ function App() {
             <NavBar />
             <Routes>
               <Route path="/lobbies" element={<LobbiesPage />} />
-              <Route path='/lobbies/:id' element={<LobbyPage />} />
-              <Route path='/me/lobbies/:id' element={<AdminLobby />} />
+              <Route path="/lobbies/:id" element={<LobbyPage />} />
+              <Route path="/me/lobbies/:id" element={<AdminLobby />} />
             </Routes>
           </GraphQLClientProvider>
         </AuthProvider>

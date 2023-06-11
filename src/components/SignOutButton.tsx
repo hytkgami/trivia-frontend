@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const SignOutButton = (props: Props) => {
-  const {signOut, loading} = useSignOut();
+  const { signOut, loading } = useSignOut();
   return (
     <>
       <button
@@ -22,7 +22,7 @@ export const SignOutButton = (props: Props) => {
         role="menuitem"
         tabIndex={-1}
         disabled={loading}
-        className={"block px-4 py-2 text-sm " + props.className}
+        className={'block px-4 py-2 text-sm ' + props.className}
       >
         {loading ? <Spinner /> : 'Sign out'}
       </button>

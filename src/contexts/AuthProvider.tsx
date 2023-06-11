@@ -35,9 +35,5 @@ export const AuthProvider = ({ children }: Props) => {
       });
     }
   }, [auth]);
-  return (
-    <AuthContext.Provider value={{ currentUser, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ currentUser, loading }}>{children}</AuthContext.Provider>;
 };

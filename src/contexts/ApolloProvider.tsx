@@ -4,7 +4,7 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
   createHttpLink,
-  split
+  split,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { ReactNode, useContext, useEffect, useState } from 'react';
@@ -40,22 +40,21 @@ export const GraphQLClientProvider = ({ children }: Props) => {
           },
         };
       });
-      const wsLink = new GraphQLWsLink(createClient({
-        url: import.meta.env.VITE_GRAPHQL_SUBSCRIPTION_ENDPOINT,
-        connectionParams: {
-          Authorization: `Bearer ${token}`,
-        }
-      }));
+      const wsLink = new GraphQLWsLink(
+        createClient({
+          url: import.meta.env.VITE_GRAPHQL_SUBSCRIPTION_ENDPOINT,
+          connectionParams: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      );
       const splitLink = split(
         ({ query }) => {
           const definition = getMainDefinition(query);
-          return (
-            definition.kind === 'OperationDefinition' &&
-            definition.operation === 'subscription'
-          );
+          return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
         },
         wsLink,
-        authLink.concat(httpLink),
+        authLink.concat(httpLink)
       );
       const client = new ApolloClient({
         link: splitLink,
