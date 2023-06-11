@@ -1,8 +1,21 @@
-import { useContext, useReducer } from 'react';
-import { AuthContext } from '../contexts/AuthProvider';
 import { SignInWithGoogleButton } from './SignInButton';
 import { SignOutButton } from './SignOutButton';
 import { Spinner } from './Spinner';
+import { graphql } from '../generated';
+import { useMutation } from '@apollo/client';
+import { useContext, useEffect, useReducer } from 'react';
+import { AuthContext } from '../contexts/AuthProvider';
+
+const SignInMutationDocument = graphql(`
+  mutation SignIn($name: String!) {
+    signin(name: $name) {
+      user {
+        id
+        name
+      }
+    }
+  }
+`);
 
 export const NavBar = () => {
   const [toggleIsOpen, toggle] = useReducer(
@@ -10,6 +23,20 @@ export const NavBar = () => {
     false
   );
   const { currentUser, loading } = useContext(AuthContext);
+  const [signIn, { loading: signInLoading }] = useMutation(
+    SignInMutationDocument
+  );
+  useEffect(() => {
+    async () => {
+      if (currentUser !== null) {
+        await signIn({
+          variables: {
+            name: currentUser.displayName ?? currentUser.email ?? 'noname',
+          },
+        });
+      }
+    };
+  }, [currentUser, signIn]);
   return (
     <>
       <nav className="bg-gray-800">
@@ -38,7 +65,7 @@ export const NavBar = () => {
             </div>
             <div className="hidden md:block">
               <div className="ml-4 flex items-center md:ml-6">
-                {loading ? (
+                {loading || signInLoading ? (
                   <Spinner />
                 ) : (
                   <div className="relative ml-3">
@@ -63,7 +90,10 @@ export const NavBar = () => {
                         </button>
                       </div>
                     ) : (
-                      <SignInWithGoogleButton afterOnClick={toggle} className='text-white' />
+                      <SignInWithGoogleButton
+                        afterOnClick={toggle}
+                        className="text-white"
+                      />
                     )}
                     {toggleIsOpen ? (
                       <div
@@ -134,7 +164,7 @@ export const NavBar = () => {
               Lobbies
             </a> */}
           </div>
-          {loading ? (
+          {loading || signInLoading ? (
             <Spinner />
           ) : currentUser ? (
             <div className="border-t border-gray-700 pb-3 pt-4">
@@ -159,7 +189,12 @@ export const NavBar = () => {
                 <SignOutButton className="text-white" afterOnClick={toggle} />
               </div>
             </div>
-          ) : <SignInWithGoogleButton afterOnClick={toggle} className='text-white' />}
+          ) : (
+            <SignInWithGoogleButton
+              afterOnClick={toggle}
+              className="text-white"
+            />
+          )}
         </div>
       </nav>
     </>
