@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthProvider';
 import './lib/firebase';
 import { LobbiesPage } from './pages/Lobbies';
 import { LobbyPage } from './pages/Lobby';
+import { AdminLobby } from './pages/admin/Lobby';
 
 function App() {
   return (
@@ -15,8 +16,8 @@ function App() {
             <NavBar />
             <Routes>
               <Route path="/lobbies" element={<LobbiesPage />} />
-              <Route path='/lobbies/:id' element={<LobbyPage />}>
-              </Route>
+              <Route path='/lobbies/:id' element={<LobbyPage />} />
+              <Route path='/me/lobbies/:id' element={<AdminLobby />} />
             </Routes>
           </GraphQLClientProvider>
         </AuthProvider>

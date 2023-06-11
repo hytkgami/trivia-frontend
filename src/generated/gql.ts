@@ -14,7 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  mutation SignIn($name: String!) {\n    signin(name: $name) {\n      user {\n        id\n        name\n      }\n    }\n  }\n": types.SignInDocument,
-    "\n  query FetchLobbies($cursor: ID, $limit: Int) {\n    lobbies(first: $limit, after: $cursor) {\n      edges {\n        node {\n          id\n          name\n          public\n        }\n        cursor\n      }\n      pageInfo {\n        cursor\n        hasNextPage\n      }\n    }\n  }\n": types.FetchLobbiesDocument,
+    "\n  query FetchLobbies($cursor: ID, $limit: Int) {\n    lobbies(first: $limit, after: $cursor) {\n      edges {\n        node {\n          id\n          name\n          public\n          owner {\n            id\n          }\n        }\n        cursor\n      }\n      pageInfo {\n        cursor\n        hasNextPage\n      }\n    }\n  }\n": types.FetchLobbiesDocument,
     "\n  subscription CurrentQuestionSubscription($lobbyId: ID!) {\n    currentQuestion(lobbyId: $lobbyId) {\n      id\n      title\n      orderNumber\n      score\n    }\n  }\n": types.CurrentQuestionSubscriptionDocument,
     "\n  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {\n    answer(questionId: $questionId, answer: $answer) {\n      answer {\n        id\n        content\n      }\n    }\n  }\n": types.CreateAnswerMutationDocument,
 };
@@ -40,7 +40,7 @@ export function graphql(source: "\n  mutation SignIn($name: String!) {\n    sign
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query FetchLobbies($cursor: ID, $limit: Int) {\n    lobbies(first: $limit, after: $cursor) {\n      edges {\n        node {\n          id\n          name\n          public\n        }\n        cursor\n      }\n      pageInfo {\n        cursor\n        hasNextPage\n      }\n    }\n  }\n"): (typeof documents)["\n  query FetchLobbies($cursor: ID, $limit: Int) {\n    lobbies(first: $limit, after: $cursor) {\n      edges {\n        node {\n          id\n          name\n          public\n        }\n        cursor\n      }\n      pageInfo {\n        cursor\n        hasNextPage\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query FetchLobbies($cursor: ID, $limit: Int) {\n    lobbies(first: $limit, after: $cursor) {\n      edges {\n        node {\n          id\n          name\n          public\n          owner {\n            id\n          }\n        }\n        cursor\n      }\n      pageInfo {\n        cursor\n        hasNextPage\n      }\n    }\n  }\n"): (typeof documents)["\n  query FetchLobbies($cursor: ID, $limit: Int) {\n    lobbies(first: $limit, after: $cursor) {\n      edges {\n        node {\n          id\n          name\n          public\n          owner {\n            id\n          }\n        }\n        cursor\n      }\n      pageInfo {\n        cursor\n        hasNextPage\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
