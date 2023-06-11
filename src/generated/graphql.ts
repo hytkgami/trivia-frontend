@@ -270,6 +270,16 @@ export type FetchLobbyQuery = {
   };
 };
 
+export type PublishQuestionMutationMutationVariables = Exact<{
+  lobbyId: Scalars['ID']['input'];
+  questionId: Scalars['ID']['input'];
+}>;
+
+export type PublishQuestionMutationMutation = {
+  __typename?: 'Mutation';
+  publishQuestion: { __typename?: 'PublishQuestionPayload'; question: { __typename?: 'Question'; id: string } };
+};
+
 export const SignInDocument = {
   kind: 'Document',
   definitions: [
@@ -596,3 +606,59 @@ export const FetchLobbyDocument = {
     },
   ],
 } as unknown as DocumentNode<FetchLobbyQuery, FetchLobbyQueryVariables>;
+export const PublishQuestionMutationDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'PublishQuestionMutation' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'questionId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'publishQuestion' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'lobbyId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'questionId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'questionId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'question' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<PublishQuestionMutationMutation, PublishQuestionMutationMutationVariables>;
