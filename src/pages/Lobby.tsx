@@ -1,5 +1,6 @@
 import { useSubscription } from '@apollo/client';
 import { graphql } from '../generated';
+import { useTextArea } from '../hooks/useInput';
 
 const CurrentQuestionSubscriptionDocument = graphql(`
   subscription CurrentQuestionSubscription($lobbyId: ID!) {
@@ -21,6 +22,8 @@ export const LobbyPage = () => {
       },
     }
   );
+  const [value, resetValue] = useTextArea('');
+
   if (loading) return <div>Fetching</div>;
   if (!data) return <div>No data</div>;
   return (
@@ -44,12 +47,20 @@ export const LobbyPage = () => {
               {data.currentQuestion.title}
             </h1>
           </div>
-          <div className="w-full lg:w-2/3 md:w-2/3 sm:w-4/5 mx-auto divide-y bg-white bg-opacity-70 rounded-lg p-1">
-            <textarea className="rounded-lg caret-current w-full resize-y lg:p-4 md:p-2 xs:p-1"></textarea>
-          </div>
-          <button className="mx-auto rounded-full text-white py-2 px-6 bg-gradient-to-r from-gray-800 to-gray-700 hover:bg-gray-600 hover:shadow-sm shadow-md md:text-base xs:text-xs shadow-gray-400">
-            回答を送信する
-          </button>
+          <form className="w-full lg:w-2/3 md:w-2/3 sm:w-4/5 mx-auto bg-white bg-opacity-70 rounded-lg p-1 pb-2 flex flex-col gap-2 items-center" onSubmit={(event) => {
+            event.preventDefault();
+            console.log(value.value)
+            resetValue();
+          }}>
+            <textarea
+              className="rounded-lg caret-current w-full resize-y lg:p-4 md:p-2 xs:p-1"
+              {...value}
+              placeholder="ここに回答を入力してください"
+            ></textarea>
+            <button className="rounded-full text-white py-2 px-6 bg-gradient-to-r from-gray-800 to-gray-700 hover:bg-gray-600 hover:shadow-sm shadow-md md:text-base xs:text-xs shadow-gray-400">
+              回答を送信する
+            </button>
+          </form>
         </div>
       </div>
     </div>
