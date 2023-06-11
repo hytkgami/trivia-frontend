@@ -1,4 +1,6 @@
-import { useSubscription } from '@apollo/client';
+import { useMutation, useSubscription } from '@apollo/client';
+import { Spinner } from '../components/Spinner';
+import { Chat } from '../components/icons/Chat';
 import { graphql } from '../generated';
 import { useTextArea } from '../hooks/useInput';
 
@@ -13,17 +15,41 @@ const CurrentQuestionSubscriptionDocument = graphql(`
   }
 `);
 
+const CreateAnswerMutationDocument = graphql(`
+  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {
+    answer(questionId: $questionId, answer: $answer) {
+      answer {
+        id
+        content
+      }
+    }
+  }
+`);
+
 export const LobbyPage = () => {
   const { data, loading } = useSubscription(
     CurrentQuestionSubscriptionDocument,
     {
       variables: {
-        lobbyId: '01H16KS0GJQ489TMPGMCKJFQW0',
+        lobbyId: '01H2MHTFVN9CCGQWJRD0E49C9H',
       },
     }
   );
   const [value, resetValue] = useTextArea('');
-
+  const [createAnswer, { data: answerData, loading: sending, error }] =
+    useMutation(CreateAnswerMutationDocument);
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!data) return;
+    if (value.value === '') return;
+    await createAnswer({
+      variables: {
+        questionId: data.currentQuestion.id,
+        answer: value.value,
+      },
+    });
+    resetValue();
+  };
   if (loading) return <div>Fetching</div>;
   if (!data) return <div>No data</div>;
   return (
@@ -47,19 +73,33 @@ export const LobbyPage = () => {
               {data.currentQuestion.title}
             </h1>
           </div>
-          <form className="w-full lg:w-2/3 md:w-2/3 sm:w-4/5 mx-auto bg-white bg-opacity-70 rounded-lg p-1 pb-2 flex flex-col gap-2 items-center" onSubmit={(event) => {
-            event.preventDefault();
-            console.log(value.value)
-            resetValue();
-          }}>
+          <form
+            className="w-full lg:w-2/3 md:w-2/3 sm:w-4/5 mx-auto bg-white bg-opacity-70 rounded-lg p-1 pb-2 flex flex-col gap-2 items-center"
+            onSubmit={submit}
+          >
             <textarea
               className="rounded-lg caret-current w-full resize-y lg:p-4 md:p-2 xs:p-1"
               {...value}
               placeholder="ここに回答を入力してください"
+              required
             ></textarea>
-            <button className="rounded-full text-white py-2 px-6 bg-gradient-to-r from-gray-800 to-gray-700 hover:bg-gray-600 hover:shadow-sm shadow-md md:text-base xs:text-xs shadow-gray-400">
+            {error ? (
+              <small className="text-sm text-red-500">
+                エラーが発生しました ({error.message})
+              </small>
+            ) : null}
+            <button
+              className="rounded-full flex gap-2 items-center text-white py-2 px-6 bg-gradient-to-r from-gray-800 to-gray-700 hover:bg-gray-600 hover:shadow-sm shadow-md md:text-base xs:text-xs shadow-gray-400"
+              disabled={sending}
+            >
+              {sending ? <Spinner /> : <Chat />}
               回答を送信する
             </button>
+            {answerData ? (
+              <small className="text-sm text-green-500">
+                回答を送信しました
+              </small>
+            ) : null}
           </form>
         </div>
       </div>
