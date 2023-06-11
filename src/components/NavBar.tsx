@@ -47,7 +47,7 @@ export const NavBar = () => {
               <div className="flex-shrink-0">
                 <Link
                   to="/"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium tracking-wide"
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-0 py-2 text-sm font-medium tracking-wide"
                 >
                   🧠 Trivia
                 </Link>
