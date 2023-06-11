@@ -2,21 +2,11 @@
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string | number; output: string };
@@ -30,6 +20,7 @@ export type Answer = Node & {
   __typename?: 'Answer';
   content: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  owner: User;
 };
 
 export type AnswerPayload = {
@@ -67,6 +58,7 @@ export type Lobby = Node & {
   name: Scalars['String']['output'];
   owner: User;
   public: Scalars['Boolean']['output'];
+  questions: Array<Question>;
 };
 
 export type LobbyConnection = Connection & {
@@ -142,7 +134,7 @@ export type PublishQuestionPayload = {
 export type Query = {
   __typename?: 'Query';
   lobbies: LobbyConnection;
-  lobby?: Maybe<Lobby>;
+  lobby: Lobby;
   questions: Array<Question>;
 };
 
@@ -204,10 +196,7 @@ export type SignInMutationVariables = Exact<{
 
 export type SignInMutation = {
   __typename?: 'Mutation';
-  signin: {
-    __typename?: 'SigninPayload';
-    user: { __typename?: 'User'; id: string; name: string };
-  };
+  signin: { __typename?: 'SigninPayload'; user: { __typename?: 'User'; id: string; name: string } };
 };
 
 export type FetchLobbiesQueryVariables = Exact<{
@@ -240,13 +229,7 @@ export type CurrentQuestionSubscriptionSubscriptionVariables = Exact<{
 
 export type CurrentQuestionSubscriptionSubscription = {
   __typename?: 'Subscription';
-  currentQuestion: {
-    __typename?: 'Question';
-    id: string;
-    title: string;
-    orderNumber: number;
-    score: number;
-  };
+  currentQuestion: { __typename?: 'Question'; id: string; title: string; orderNumber: number; score: number };
 };
 
 export type CreateAnswerMutationMutationVariables = Exact<{
@@ -256,9 +239,34 @@ export type CreateAnswerMutationMutationVariables = Exact<{
 
 export type CreateAnswerMutationMutation = {
   __typename?: 'Mutation';
-  answer: {
-    __typename?: 'AnswerPayload';
-    answer: { __typename?: 'Answer'; id: string; content: string };
+  answer: { __typename?: 'AnswerPayload'; answer: { __typename?: 'Answer'; id: string; content: string } };
+};
+
+export type FetchLobbyQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type FetchLobbyQuery = {
+  __typename?: 'Query';
+  lobby: {
+    __typename?: 'Lobby';
+    id: string;
+    name: string;
+    public: boolean;
+    owner: { __typename?: 'User'; id: string; name: string };
+    questions: Array<{
+      __typename?: 'Question';
+      id: string;
+      title: string;
+      orderNumber: number;
+      score: number;
+      answers: Array<{
+        __typename?: 'Answer';
+        id: string;
+        content: string;
+        owner: { __typename?: 'User'; id: string; name: string };
+      }>;
+    }>;
   };
 };
 
@@ -273,13 +281,7 @@ export const SignInDocument = {
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } },
         },
       ],
       selectionSet: {
@@ -292,10 +294,7 @@ export const SignInDocument = {
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'name' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'name' },
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
               },
             ],
             selectionSet: {
@@ -330,18 +329,12 @@ export const FetchLobbiesDocument = {
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'cursor' },
-          },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'cursor' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
         },
         {
           kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'limit' },
-          },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'limit' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
         },
       ],
@@ -355,18 +348,12 @@ export const FetchLobbiesDocument = {
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'first' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'limit' },
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'limit' } },
               },
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'after' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'cursor' },
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'cursor' } },
               },
             ],
             selectionSet: {
@@ -384,38 +371,21 @@ export const FetchLobbiesDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'public' },
-                            },
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'public' } },
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'owner' },
                               selectionSet: {
                                 kind: 'SelectionSet',
-                                selections: [
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                  },
-                                ],
+                                selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
                               },
                             },
                           ],
                         },
                       },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'cursor' } },
                     ],
                   },
                 },
@@ -425,14 +395,8 @@ export const FetchLobbiesDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'hasNextPage' },
-                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'cursor' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
                     ],
                   },
                 },
@@ -454,14 +418,8 @@ export const CurrentQuestionSubscriptionDocument = {
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'lobbyId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
         },
       ],
       selectionSet: {
@@ -474,10 +432,7 @@ export const CurrentQuestionSubscriptionDocument = {
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'lobbyId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'lobbyId' },
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
               },
             ],
             selectionSet: {
@@ -505,28 +460,13 @@ export const CreateAnswerMutationDocument = {
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'questionId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'questionId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
         },
         {
           kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'answer' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'answer' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } },
         },
       ],
       selectionSet: {
@@ -539,18 +479,12 @@ export const CreateAnswerMutationDocument = {
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'questionId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'questionId' },
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'questionId' } },
               },
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'answer' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'answer' },
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'answer' } },
               },
             ],
             selectionSet: {
@@ -563,10 +497,7 @@ export const CreateAnswerMutationDocument = {
                     kind: 'SelectionSet',
                     selections: [
                       { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'content' },
-                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'content' } },
                     ],
                   },
                 },
@@ -578,3 +509,90 @@ export const CreateAnswerMutationDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateAnswerMutationMutation, CreateAnswerMutationMutationVariables>;
+export const FetchLobbyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'FetchLobby' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'lobby' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'public' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'owner' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'questions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'orderNumber' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'score' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'answers' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'owner' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FetchLobbyQuery, FetchLobbyQueryVariables>;

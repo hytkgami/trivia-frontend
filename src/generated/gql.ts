@@ -21,6 +21,8 @@ const documents = {
     types.CurrentQuestionSubscriptionDocument,
   '\n  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {\n    answer(questionId: $questionId, answer: $answer) {\n      answer {\n        id\n        content\n      }\n    }\n  }\n':
     types.CreateAnswerMutationDocument,
+  '\n  query FetchLobby($id: ID!) {\n    lobby(id: $id) {\n      id\n      name\n      public\n      owner {\n        id\n        name\n      }\n      questions {\n        id\n        title\n        orderNumber\n        score\n        answers {\n          id\n          content\n          owner {\n            id\n            name\n          }\n        }\n      }\n    }\n  }\n':
+    types.FetchLobbyDocument,
 };
 
 /**
@@ -61,6 +63,12 @@ export function graphql(
 export function graphql(
   source: '\n  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {\n    answer(questionId: $questionId, answer: $answer) {\n      answer {\n        id\n        content\n      }\n    }\n  }\n'
 ): (typeof documents)['\n  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {\n    answer(questionId: $questionId, answer: $answer) {\n      answer {\n        id\n        content\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query FetchLobby($id: ID!) {\n    lobby(id: $id) {\n      id\n      name\n      public\n      owner {\n        id\n        name\n      }\n      questions {\n        id\n        title\n        orderNumber\n        score\n        answers {\n          id\n          content\n          owner {\n            id\n            name\n          }\n        }\n      }\n    }\n  }\n'
+): (typeof documents)['\n  query FetchLobby($id: ID!) {\n    lobby(id: $id) {\n      id\n      name\n      public\n      owner {\n        id\n        name\n      }\n      questions {\n        id\n        title\n        orderNumber\n        score\n        answers {\n          id\n          content\n          owner {\n            id\n            name\n          }\n        }\n      }\n    }\n  }\n'];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
