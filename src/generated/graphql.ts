@@ -21,6 +21,7 @@ export type Answer = Node & {
   content: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   owner: User;
+  score: Score;
 };
 
 export type AnswerPayload = {
@@ -73,6 +74,12 @@ export type LobbyEdge = Edge & {
   node: Lobby;
 };
 
+export enum Mark {
+  Correct = 'CORRECT',
+  Incorrect = 'INCORRECT',
+  Neutral = 'NEUTRAL',
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   answer: AnswerPayload;
@@ -80,6 +87,7 @@ export type Mutation = {
   createQuestions: CreateQuestionPayload;
   deleteLobby: Lobby;
   publishQuestion: PublishQuestionPayload;
+  scoring: ScoringPayload;
   signin: SigninPayload;
 };
 
@@ -105,6 +113,12 @@ export type MutationDeleteLobbyArgs = {
 export type MutationPublishQuestionArgs = {
   lobbyId: Scalars['ID']['input'];
   questionId: Scalars['ID']['input'];
+};
+
+export type MutationScoringArgs = {
+  answerId: Scalars['ID']['input'];
+  mark: Mark;
+  value: Scalars['Int']['input'];
 };
 
 export type MutationSigninArgs = {
@@ -168,6 +182,17 @@ export type QuestionInput = {
   orderNumber: Scalars['Int']['input'];
   score: Scalars['Int']['input'];
   title: Scalars['String']['input'];
+};
+
+export type Score = {
+  __typename?: 'Score';
+  mark: Mark;
+  value: Scalars['Int']['output'];
+};
+
+export type ScoringPayload = {
+  __typename?: 'ScoringPayload';
+  answer: Answer;
 };
 
 export type SigninPayload = {
@@ -242,6 +267,25 @@ export type CreateAnswerMutationMutation = {
   answer: { __typename?: 'AnswerPayload'; answer: { __typename?: 'Answer'; id: string; content: string } };
 };
 
+export type ScoringMutationMutationVariables = Exact<{
+  answerId: Scalars['ID']['input'];
+  mark: Mark;
+  score: Scalars['Int']['input'];
+}>;
+
+export type ScoringMutationMutation = {
+  __typename?: 'Mutation';
+  scoring: {
+    __typename?: 'ScoringPayload';
+    answer: {
+      __typename?: 'Answer';
+      id: string;
+      content: string;
+      score: { __typename?: 'Score'; mark: Mark; value: number };
+    };
+  };
+};
+
 export type FetchLobbyQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -265,6 +309,7 @@ export type FetchLobbyQuery = {
         id: string;
         content: string;
         owner: { __typename?: 'User'; id: string; name: string };
+        score: { __typename?: 'Score'; mark: Mark; value: number };
       }>;
     }>;
   };
@@ -519,6 +564,86 @@ export const CreateAnswerMutationDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateAnswerMutationMutation, CreateAnswerMutationMutationVariables>;
+export const ScoringMutationDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ScoringMutation' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'answerId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'mark' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'Mark' } } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'score' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'scoring' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'answerId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'answerId' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'mark' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'mark' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'value' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'score' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'answer' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'score' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ScoringMutationMutation, ScoringMutationMutationVariables>;
 export const FetchLobbyDocument = {
   kind: 'Document',
   definitions: [
@@ -589,6 +714,17 @@ export const FetchLobbyDocument = {
                                 selections: [
                                   { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                   { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                ],
+                              },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'score' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'value' } },
                                 ],
                               },
                             },

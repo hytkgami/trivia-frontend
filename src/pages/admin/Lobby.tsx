@@ -1,11 +1,27 @@
-import { useContext, useState } from 'react';
-import { AuthContext } from '../../contexts/AuthProvider';
-import { Container } from '../layouts/Container';
-import { graphql } from '../../generated';
-import { Spinner } from '../../components/Spinner';
-import { useParams } from 'react-router';
 import { useMutation, useQuery } from '@apollo/client';
-import { Question } from '../../generated/graphql';
+import { useContext, useState } from 'react';
+import { useParams } from 'react-router';
+import { Spinner } from '../../components/Spinner';
+import { AuthContext } from '../../contexts/AuthProvider';
+import { graphql } from '../../generated';
+import { Mark, Question } from '../../generated/graphql';
+import { Container } from '../layouts/Container';
+import { useInput } from '../../hooks/useInput';
+
+const ScoringMutationDocument = graphql(`
+  mutation ScoringMutation($answerId: ID!, $mark: Mark!, $score: Int!) {
+    scoring(answerId: $answerId, mark: $mark, value: $score) {
+      answer {
+        id
+        content
+        score {
+          mark
+          value
+        }
+      }
+    }
+  }
+`);
 
 const FetchLobbyQueryDocument = graphql(`
   query FetchLobby($id: ID!) {
@@ -29,6 +45,10 @@ const FetchLobbyQueryDocument = graphql(`
             id
             name
           }
+          score {
+            mark
+            value
+          }
         }
       }
     }
@@ -46,6 +66,7 @@ const PublishQuestionMutationDocument = graphql(`
 `);
 
 export const AdminLobby = () => {
+  const [value, resetValue] = useInput('');
   const { id } = useParams<{ id: string }>();
   const { data, loading, error, refetch } = useQuery(FetchLobbyQueryDocument, {
     variables: {
@@ -55,6 +76,7 @@ export const AdminLobby = () => {
   const { currentUser } = useContext(AuthContext);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [publishQuestion] = useMutation(PublishQuestionMutationDocument);
+  const [scoring] = useMutation(ScoringMutationDocument);
   if (loading) {
     return (
       <Container>
@@ -141,10 +163,84 @@ export const AdminLobby = () => {
             {selectedQuestion ? (
               selectedQuestion.answers.map((answer) => {
                 return (
-                  <div key={answer.id}>
-                    <div className="flex flex-col gap-2 px-2 py-1 bg-white rounded-md outline outline-1 outline-gray-200">
-                      <p>{answer.content}</p>
+                  <div
+                    key={answer.id}
+                    className="w-full flex flex-col px-2 pt-1 pb-2 gap-2 bg-white rounded-md outline outline-1 outline-gray-200"
+                  >
+                    <p>{answer.content}</p>
+                    <div className="flex flex-col gap-1 divide-y">
                       <p className="text-xs">回答者: {answer.owner.name}</p>
+                      <p className="text-sm">
+                        採点結果 <span className="text-red-700">{answer.score.mark}</span> 配点 {answer.score.value}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 my-auto">
+                      <button
+                        className="outline outline-1 outline-slate-400 bg-gray-50 rounded-md py-1 px-2 shadow-md hover:shadow-none"
+                        onClick={async () => {
+                          const res = await scoring({
+                            variables: {
+                              answerId: answer.id,
+                              mark: Mark.Correct,
+                              score: selectedQuestion.score,
+                            },
+                          });
+                          if (res.errors) {
+                            console.error(res.errors);
+                          }
+                        }}
+                      >
+                        ⭕️
+                      </button>
+                      <button
+                        className="outline outline-1 outline-slate-400 bg-gray-50 rounded-md py-1 px-2 shadow-md hover:shadow-none"
+                        onClick={async () => {
+                          const res = await scoring({
+                            variables: {
+                              answerId: answer.id,
+                              mark: Mark.Incorrect,
+                              score: 0,
+                            },
+                          });
+                          if (res.errors) {
+                            console.error(res.errors);
+                          } else {
+                            await refetch();
+                          }
+                        }}
+                      >
+                        ❌
+                      </button>
+                      <div className="flex-grow flex outline outline-1 outline-slate-400 bg-gray-50 rounded-md shadow-md hover:shadow-none">
+                        <button
+                          className="py-1 px-2"
+                          onClick={async () => {
+                            const res = await scoring({
+                              variables: {
+                                answerId: answer.id,
+                                mark: Mark.Neutral,
+                                score: value.value ? parseInt(value.value) : 0,
+                              },
+                            });
+                            if (res.errors) {
+                              console.error(res.errors);
+                            } else {
+                              await refetch();
+                              resetValue();
+                            }
+                          }}
+                        >
+                          🤔
+                        </button>
+                        <input
+                          type="number"
+                          className="placeholder:text-sm flex-grow"
+                          placeholder={`配点して送信 (max: ${selectedQuestion.score})`}
+                          max={selectedQuestion.score}
+                          min={0}
+                          {...value}
+                        />
+                      </div>
                     </div>
                   </div>
                 );

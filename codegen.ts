@@ -16,6 +16,9 @@ const config: CodegenConfig = {
     'src/generated/': {
       preset: 'client',
       plugins: [],
+      config: {
+        hooks: { afterAllFileWrite: ['prettier --write .'] },
+      },
     },
   },
 };
