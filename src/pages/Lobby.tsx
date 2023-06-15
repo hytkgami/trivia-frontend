@@ -5,6 +5,8 @@ import { graphql } from '../generated';
 import { useTextArea } from '../hooks/useInput';
 import { useParams } from 'react-router';
 import { useEffect } from 'react';
+import { LobbyStatus } from '../generated/graphql';
+import { Container } from './layouts/Container';
 
 const CurrentQuestionSubscriptionDocument = graphql(`
   subscription CurrentQuestionSubscription($lobbyId: ID!) {
@@ -28,12 +30,23 @@ const CreateAnswerMutationDocument = graphql(`
   }
 `);
 
+const LobbyStatusSubscriptionDocument = graphql(`
+  subscription LobbyStatus($lobbyId: ID!) {
+    lobbyStatus(lobbyId: $lobbyId)
+  }
+`);
+
 export const LobbyPage = () => {
   const { id } = useParams<{ id: string }>();
   useEffect(() => {
     // TODO: navigate to /lobbies if no id and show error
     if (!id) return;
   }, [id]);
+  const { data: lobbyStatusData, loading: statusLoading } = useSubscription(LobbyStatusSubscriptionDocument, {
+    variables: {
+      lobbyId: id!,
+    },
+  });
   const { data, loading } = useSubscription(CurrentQuestionSubscriptionDocument, {
     variables: {
       lobbyId: id!,
@@ -53,6 +66,22 @@ export const LobbyPage = () => {
     });
     resetValue();
   };
+  if (statusLoading) return <Spinner />;
+  if (!lobbyStatusData) return <div>No lobby status</div>;
+  if (lobbyStatusData.lobbyStatus === LobbyStatus.Waiting)
+    return (
+      <Container>
+        <h2 className="text-2xl font-bold text-center">セッションの開始を待機中です</h2>
+        <Spinner />
+      </Container>
+    );
+  if (lobbyStatusData.lobbyStatus === LobbyStatus.Finished)
+    return (
+      <Container>
+        <h2 className="text-2xl font-bold text-center">セッションは終了しました</h2>
+        {/* TODO: 結果画面を用意する */}
+      </Container>
+    );
   if (loading) return <div>Fetching</div>;
   if (!data) return <div>No data</div>;
   return (

@@ -74,6 +74,12 @@ export type LobbyEdge = Edge & {
   node: Lobby;
 };
 
+export enum LobbyStatus {
+  Active = 'ACTIVE',
+  Finished = 'FINISHED',
+  Waiting = 'WAITING',
+}
+
 export enum Mark {
   Correct = 'CORRECT',
   Incorrect = 'INCORRECT',
@@ -86,6 +92,7 @@ export type Mutation = {
   createLobby: CreateLobbyPayload;
   createQuestions: CreateQuestionPayload;
   deleteLobby: Lobby;
+  publishLobbyStatus: PublishLobbyStatusPayload;
   publishQuestion: PublishQuestionPayload;
   scoring: ScoringPayload;
   signin: SigninPayload;
@@ -108,6 +115,11 @@ export type MutationCreateQuestionsArgs = {
 
 export type MutationDeleteLobbyArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationPublishLobbyStatusArgs = {
+  lobbyId: Scalars['ID']['input'];
+  status: LobbyStatus;
 };
 
 export type MutationPublishQuestionArgs = {
@@ -138,6 +150,12 @@ export type PageInfo = {
   __typename?: 'PageInfo';
   cursor: Scalars['String']['output'];
   hasNextPage: Scalars['Boolean']['output'];
+};
+
+export type PublishLobbyStatusPayload = {
+  __typename?: 'PublishLobbyStatusPayload';
+  lobby: Lobby;
+  status: LobbyStatus;
 };
 
 export type PublishQuestionPayload = {
@@ -203,9 +221,14 @@ export type SigninPayload = {
 export type Subscription = {
   __typename?: 'Subscription';
   currentQuestion: Question;
+  lobbyStatus: LobbyStatus;
 };
 
 export type SubscriptionCurrentQuestionArgs = {
+  lobbyId: Scalars['ID']['input'];
+};
+
+export type SubscriptionLobbyStatusArgs = {
   lobbyId: Scalars['ID']['input'];
 };
 
@@ -266,6 +289,12 @@ export type CreateAnswerMutationMutation = {
   __typename?: 'Mutation';
   answer: { __typename?: 'AnswerPayload'; answer: { __typename?: 'Answer'; id: string; content: string } };
 };
+
+export type LobbyStatusSubscriptionVariables = Exact<{
+  lobbyId: Scalars['ID']['input'];
+}>;
+
+export type LobbyStatusSubscription = { __typename?: 'Subscription'; lobbyStatus: LobbyStatus };
 
 export type ScoringMutationMutationVariables = Exact<{
   answerId: Scalars['ID']['input'];
@@ -564,6 +593,39 @@ export const CreateAnswerMutationDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateAnswerMutationMutation, CreateAnswerMutationMutationVariables>;
+export const LobbyStatusDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'subscription',
+      name: { kind: 'Name', value: 'LobbyStatus' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'lobbyStatus' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'lobbyId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<LobbyStatusSubscription, LobbyStatusSubscriptionVariables>;
 export const ScoringMutationDocument = {
   kind: 'Document',
   definitions: [

@@ -21,6 +21,7 @@ const documents = {
     types.CurrentQuestionSubscriptionDocument,
   '\n  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {\n    answer(questionId: $questionId, answer: $answer) {\n      answer {\n        id\n        content\n      }\n    }\n  }\n':
     types.CreateAnswerMutationDocument,
+  '\n  subscription LobbyStatus($lobbyId: ID!) {\n    lobbyStatus(lobbyId: $lobbyId)\n  }\n': types.LobbyStatusDocument,
   '\n  mutation ScoringMutation($answerId: ID!, $mark: Mark!, $score: Int!) {\n    scoring(answerId: $answerId, mark: $mark, value: $score) {\n      answer {\n        id\n        content\n        score {\n          mark\n          value\n        }\n      }\n    }\n  }\n':
     types.ScoringMutationDocument,
   '\n  query FetchLobby($id: ID!) {\n    lobby(id: $id) {\n      id\n      name\n      public\n      owner {\n        id\n        name\n      }\n      questions {\n        id\n        title\n        orderNumber\n        score\n        answers {\n          id\n          content\n          owner {\n            id\n            name\n          }\n          score {\n            mark\n            value\n          }\n        }\n      }\n    }\n  }\n':
@@ -67,6 +68,12 @@ export function graphql(
 export function graphql(
   source: '\n  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {\n    answer(questionId: $questionId, answer: $answer) {\n      answer {\n        id\n        content\n      }\n    }\n  }\n'
 ): (typeof documents)['\n  mutation CreateAnswerMutation($questionId: ID!, $answer: String!) {\n    answer(questionId: $questionId, answer: $answer) {\n      answer {\n        id\n        content\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  subscription LobbyStatus($lobbyId: ID!) {\n    lobbyStatus(lobbyId: $lobbyId)\n  }\n'
+): (typeof documents)['\n  subscription LobbyStatus($lobbyId: ID!) {\n    lobbyStatus(lobbyId: $lobbyId)\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
