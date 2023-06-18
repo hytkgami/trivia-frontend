@@ -6,6 +6,7 @@ import './lib/firebase';
 import { LobbiesPage } from './pages/Lobbies';
 import { LobbyPage } from './pages/Lobby';
 import { AdminLobby } from './pages/admin/Lobby';
+import { Main } from './pages/Main';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <GraphQLClientProvider>
             <NavBar />
             <Routes>
+              <Route path="/" element={<Main />} />
               <Route path="/lobbies" element={<LobbiesPage />} />
               <Route path="/lobbies/:id" element={<LobbyPage />} />
               <Route path="/me/lobbies/:id" element={<AdminLobby />} />
