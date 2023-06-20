@@ -5,8 +5,10 @@ import { AnswerCard } from '../../components/AnswerCard';
 import { Spinner } from '../../components/Spinner';
 import { AuthContext } from '../../contexts/AuthProvider';
 import { useFragment as getFragment, graphql } from '../../generated';
-import { QuestionItemFragment } from '../../generated/graphql';
+import { LobbyStatus, QuestionItemFragment } from '../../generated/graphql';
 import { Container } from '../layouts/Container';
+import { ArrowPath } from '../../components/icons/ArrowPath';
+import { Button } from '../../components/Button';
 
 const QuestionFragment = graphql(`
   fragment QuestionItem on Question {
@@ -37,6 +39,18 @@ const FetchLobbyQueryDocument = graphql(`
   }
 `);
 
+const PublishLobbyStatusMutationDocument = graphql(`
+  mutation PublishLobbyStatus($lobbyId: ID!, $status: LobbyStatus!) {
+    publishLobbyStatus(lobbyId: $lobbyId, status: $status) {
+      lobby {
+        id
+        name
+      }
+      status
+    }
+  }
+`);
+
 const PublishQuestionMutationDocument = graphql(`
   mutation PublishQuestionMutation($lobbyId: ID!, $questionId: ID!) {
     publishQuestion(lobbyId: $lobbyId, questionId: $questionId) {
@@ -49,13 +63,14 @@ const PublishQuestionMutationDocument = graphql(`
 
 export const AdminLobby = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, loading, error } = useQuery(FetchLobbyQueryDocument, {
+  const { data, loading, error, refetch } = useQuery(FetchLobbyQueryDocument, {
     variables: {
       id: id!,
     },
   });
   const { currentUser } = useContext(AuthContext);
   const questions = getFragment(QuestionFragment, data?.lobby.questions);
+  const [publishLobbyStatus] = useMutation(PublishLobbyStatusMutationDocument);
   const [publishQuestion] = useMutation(PublishQuestionMutationDocument);
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionItemFragment | null>(null);
   if (loading) {
@@ -88,7 +103,54 @@ export const AdminLobby = () => {
   }
   return (
     <Container>
-      <h1 className="py-4 text-2xl font-bold text-gray-900">{data.lobby.name}</h1>
+      <div className="flex gap-2 items-center">
+        <h1 className="py-4 text-2xl font-bold text-gray-900">{data.lobby.name}</h1>
+        <Button
+          onClick={async () => {
+            await refetch();
+            setSelectedQuestion(null);
+          }}
+        >
+          <ArrowPath />
+        </Button>
+        <p>セッションステータスの更新</p>
+        <Button
+          onClick={() =>
+            publishLobbyStatus({
+              variables: {
+                lobbyId: data.lobby.id,
+                status: LobbyStatus.Waiting,
+              },
+            })
+          }
+        >
+          ✋ WAITING
+        </Button>
+        <Button
+          onClick={() =>
+            publishLobbyStatus({
+              variables: {
+                lobbyId: data.lobby.id,
+                status: LobbyStatus.Active,
+              },
+            })
+          }
+        >
+          ⏩ ACTIVE
+        </Button>
+        <Button
+          onClick={() =>
+            publishLobbyStatus({
+              variables: {
+                lobbyId: data.lobby.id,
+                status: LobbyStatus.Finished,
+              },
+            })
+          }
+        >
+          🎉 FINISHED
+        </Button>
+      </div>
       <div className="flex gap-2">
         <div className="w-1/3">
           <h2 className="py-2 text-lg font-semibold text-gray-800">問題一覧</h2>
@@ -101,22 +163,15 @@ export const AdminLobby = () => {
                 }}`}
               >
                 <h3>{question.title}</h3>
-                <ul className="flex gap-2 text-xs">
-                  <li className="py-1 px-3 rounded-full text-white bg-indigo-500">
-                    {question.score} {question.score > 1 ? 'pts' : 'pt'}
-                  </li>
-                </ul>
                 <div className="flex gap-2">
-                  <button
-                    className="text-sm py-1 px-3 rounded-md text-gray-800 outline outline-1 outline-gray-300"
+                  <Button
                     onClick={async () => {
                       setSelectedQuestion(question);
                     }}
                   >
                     回答を確認する
-                  </button>
-                  <button
-                    className="text-sm py-1 px-3 rounded-md text-gray-800 outline outline-1 outline-gray-300"
+                  </Button>
+                  <Button
                     onClick={() =>
                       publishQuestion({
                         variables: {
@@ -127,7 +182,7 @@ export const AdminLobby = () => {
                     }
                   >
                     配信する
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

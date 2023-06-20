@@ -345,6 +345,20 @@ export type FetchLobbyQuery = {
   };
 };
 
+export type PublishLobbyStatusMutationVariables = Exact<{
+  lobbyId: Scalars['ID']['input'];
+  status: LobbyStatus;
+}>;
+
+export type PublishLobbyStatusMutation = {
+  __typename?: 'Mutation';
+  publishLobbyStatus: {
+    __typename?: 'PublishLobbyStatusPayload';
+    status: LobbyStatus;
+    lobby: { __typename?: 'Lobby'; id: string; name: string };
+  };
+};
+
 export type PublishQuestionMutationMutationVariables = Exact<{
   lobbyId: Scalars['ID']['input'];
   questionId: Scalars['ID']['input'];
@@ -943,6 +957,66 @@ export const FetchLobbyDocument = {
     },
   ],
 } as unknown as DocumentNode<FetchLobbyQuery, FetchLobbyQueryVariables>;
+export const PublishLobbyStatusDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'PublishLobbyStatus' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'status' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'LobbyStatus' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'publishLobbyStatus' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'lobbyId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'lobbyId' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'status' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'status' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'lobby' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<PublishLobbyStatusMutation, PublishLobbyStatusMutationVariables>;
 export const PublishQuestionMutationDocument = {
   kind: 'Document',
   definitions: [

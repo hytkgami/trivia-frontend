@@ -30,6 +30,8 @@ const documents = {
     types.QuestionItemFragmentDoc,
   '\n  query FetchLobby($id: ID!) {\n    lobby(id: $id) {\n      id\n      name\n      public\n      owner {\n        id\n        name\n      }\n      questions {\n        ...QuestionItem\n      }\n    }\n  }\n':
     types.FetchLobbyDocument,
+  '\n  mutation PublishLobbyStatus($lobbyId: ID!, $status: LobbyStatus!) {\n    publishLobbyStatus(lobbyId: $lobbyId, status: $status) {\n      lobby {\n        id\n        name\n      }\n      status\n    }\n  }\n':
+    types.PublishLobbyStatusDocument,
   '\n  mutation PublishQuestionMutation($lobbyId: ID!, $questionId: ID!) {\n    publishQuestion(lobbyId: $lobbyId, questionId: $questionId) {\n      question {\n        id\n      }\n    }\n  }\n':
     types.PublishQuestionMutationDocument,
 };
@@ -102,6 +104,12 @@ export function graphql(
 export function graphql(
   source: '\n  query FetchLobby($id: ID!) {\n    lobby(id: $id) {\n      id\n      name\n      public\n      owner {\n        id\n        name\n      }\n      questions {\n        ...QuestionItem\n      }\n    }\n  }\n'
 ): (typeof documents)['\n  query FetchLobby($id: ID!) {\n    lobby(id: $id) {\n      id\n      name\n      public\n      owner {\n        id\n        name\n      }\n      questions {\n        ...QuestionItem\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation PublishLobbyStatus($lobbyId: ID!, $status: LobbyStatus!) {\n    publishLobbyStatus(lobbyId: $lobbyId, status: $status) {\n      lobby {\n        id\n        name\n      }\n      status\n    }\n  }\n'
+): (typeof documents)['\n  mutation PublishLobbyStatus($lobbyId: ID!, $status: LobbyStatus!) {\n    publishLobbyStatus(lobbyId: $lobbyId, status: $status) {\n      lobby {\n        id\n        name\n      }\n      status\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
