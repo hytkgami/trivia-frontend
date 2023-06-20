@@ -23,7 +23,7 @@ export const NavBar = () => {
   const { currentUser, loading } = useContext(AuthContext);
   const [signIn, { loading: signInLoading }] = useMutation(SignInMutationDocument);
   useEffect(() => {
-    async () => {
+    (async () => {
       if (currentUser !== null) {
         await signIn({
           variables: {
@@ -31,7 +31,7 @@ export const NavBar = () => {
           },
         });
       }
-    };
+    })();
   }, [currentUser, signIn]);
   return (
     <>
