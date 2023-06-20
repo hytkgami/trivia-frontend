@@ -1,13 +1,13 @@
 import { useMutation, useSubscription } from '@apollo/client';
+import { useEffect, useReducer } from 'react';
+import { useParams } from 'react-router';
+import { Popup } from '../components/Popup';
 import { Spinner } from '../components/Spinner';
 import { Chat } from '../components/icons/Chat';
 import { graphql } from '../generated';
-import { useTextArea } from '../hooks/useInput';
-import { useParams } from 'react-router';
-import { useEffect, useReducer, useState } from 'react';
 import { LobbyStatus } from '../generated/graphql';
+import { useTextArea } from '../hooks/useInput';
 import { Container } from './layouts/Container';
-import { Popup } from '../components/Popup';
 
 const CurrentQuestionSubscriptionDocument = graphql(`
   subscription CurrentQuestionSubscription($lobbyId: ID!) {
