@@ -7,11 +7,11 @@ import {
   split,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { createClient } from 'graphql-ws';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import { AuthContext } from './AuthProvider';
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
-import { createClient } from 'graphql-ws';
-import { getMainDefinition } from '@apollo/client/utilities';
 
 interface Props {
   children: ReactNode;
