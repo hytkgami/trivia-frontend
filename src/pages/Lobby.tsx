@@ -4,7 +4,7 @@ import { Chat } from '../components/icons/Chat';
 import { graphql } from '../generated';
 import { useTextArea } from '../hooks/useInput';
 import { useParams } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { LobbyStatus } from '../generated/graphql';
 import { Container } from './layouts/Container';
 import { Popup } from '../components/Popup';
@@ -48,11 +48,25 @@ export const LobbyPage = () => {
       lobbyId: id!,
     },
   });
+  const [showPing, toggle] = useReducer((showPing) => !showPing, true);
   const { data, loading } = useSubscription(CurrentQuestionSubscriptionDocument, {
     variables: {
       lobbyId: id!,
     },
+    onSubscriptionData: () => {
+      if (showPing) return;
+      toggle();
+    },
   });
+  useEffect(() => {
+    if (!showPing) return;
+    const timer = setTimeout(() => {
+      toggle();
+    }, 4 * 1000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [showPing]);
   const [value, resetValue] = useTextArea('');
   const [createAnswer, { data: answerData, loading: sending, error }] = useMutation(CreateAnswerMutationDocument);
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -104,7 +118,15 @@ export const LobbyPage = () => {
             }}
           />
         </div>
-        <div className="flex flex-col gap-2 lg:gap-8">
+        <div className="relative flex flex-col gap-2 lg:gap-8">
+          {showPing && (
+            <div className="absolute -right-1 -top-1">
+              <span className="relative flex h-5 w-5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-5 w-5 bg-sky-500"></span>
+              </span>
+            </div>
+          )}
           <div className="bg-white bg-opacity-90 text-gray-700 lg:px-12 lg:py-24 md:px-8 md:py-18 sm:px-4 sm:py-6 xs:px-1 xs:py-4 rounded-lg">
             <h1 className="text-center lg:text-4xl md:text-2xl sm:text-xl font-bold">{data.currentQuestion.title}</h1>
           </div>
