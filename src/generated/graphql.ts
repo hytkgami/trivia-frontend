@@ -21,7 +21,7 @@ export type Answer = Node & {
   content: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   owner: User;
-  score: Score;
+  score?: Maybe<Score>;
 };
 
 export type AnswerPayload = {
@@ -238,6 +238,28 @@ export type User = Node & {
   name: Scalars['String']['output'];
 };
 
+export type AnswerItemFragment = {
+  __typename?: 'Answer';
+  id: string;
+  content: string;
+  owner: { __typename?: 'User'; id: string; name: string };
+  score?: { __typename?: 'Score'; mark: Mark; value: number } | null;
+} & { ' $fragmentName'?: 'AnswerItemFragment' };
+
+export type ScoringMutationMutationVariables = Exact<{
+  answerId: Scalars['ID']['input'];
+  mark: Mark;
+  score: Scalars['Int']['input'];
+}>;
+
+export type ScoringMutationMutation = {
+  __typename?: 'Mutation';
+  scoring: {
+    __typename?: 'ScoringPayload';
+    answer: { __typename?: 'Answer' } & { ' $fragmentRefs'?: { AnswerItemFragment: AnswerItemFragment } };
+  };
+};
+
 export type SignInMutationVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
@@ -296,24 +318,14 @@ export type LobbyStatusSubscriptionVariables = Exact<{
 
 export type LobbyStatusSubscription = { __typename?: 'Subscription'; lobbyStatus: LobbyStatus };
 
-export type ScoringMutationMutationVariables = Exact<{
-  answerId: Scalars['ID']['input'];
-  mark: Mark;
-  score: Scalars['Int']['input'];
-}>;
-
-export type ScoringMutationMutation = {
-  __typename?: 'Mutation';
-  scoring: {
-    __typename?: 'ScoringPayload';
-    answer: {
-      __typename?: 'Answer';
-      id: string;
-      content: string;
-      score: { __typename?: 'Score'; mark: Mark; value: number };
-    };
-  };
-};
+export type QuestionItemFragment = {
+  __typename?: 'Question';
+  id: string;
+  title: string;
+  orderNumber: number;
+  score: number;
+  answers: Array<{ __typename?: 'Answer' } & { ' $fragmentRefs'?: { AnswerItemFragment: AnswerItemFragment } }>;
+} & { ' $fragmentName'?: 'QuestionItemFragment' };
 
 export type FetchLobbyQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -327,20 +339,9 @@ export type FetchLobbyQuery = {
     name: string;
     public: boolean;
     owner: { __typename?: 'User'; id: string; name: string };
-    questions: Array<{
-      __typename?: 'Question';
-      id: string;
-      title: string;
-      orderNumber: number;
-      score: number;
-      answers: Array<{
-        __typename?: 'Answer';
-        id: string;
-        content: string;
-        owner: { __typename?: 'User'; id: string; name: string };
-        score: { __typename?: 'Score'; mark: Mark; value: number };
-      }>;
-    }>;
+    questions: Array<
+      { __typename?: 'Question' } & { ' $fragmentRefs'?: { QuestionItemFragment: QuestionItemFragment } }
+    >;
   };
 };
 
@@ -354,6 +355,206 @@ export type PublishQuestionMutationMutation = {
   publishQuestion: { __typename?: 'PublishQuestionPayload'; question: { __typename?: 'Question'; id: string } };
 };
 
+export const AnswerItemFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'AnswerItem' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Answer' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'owner' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'score' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AnswerItemFragment, unknown>;
+export const QuestionItemFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'QuestionItem' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Question' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'orderNumber' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'score' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'answers' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'AnswerItem' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'AnswerItem' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Answer' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'owner' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'score' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<QuestionItemFragment, unknown>;
+export const ScoringMutationDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ScoringMutation' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'answerId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'mark' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'Mark' } } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'score' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'scoring' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'answerId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'answerId' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'mark' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'mark' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'value' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'score' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'answer' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'AnswerItem' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'AnswerItem' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Answer' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'owner' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'score' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ScoringMutationMutation, ScoringMutationMutationVariables>;
 export const SignInDocument = {
   kind: 'Document',
   definitions: [
@@ -626,86 +827,6 @@ export const LobbyStatusDocument = {
     },
   ],
 } as unknown as DocumentNode<LobbyStatusSubscription, LobbyStatusSubscriptionVariables>;
-export const ScoringMutationDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'ScoringMutation' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'answerId' } },
-          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'mark' } },
-          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'Mark' } } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'score' } },
-          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'scoring' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'answerId' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'answerId' } },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'mark' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'mark' } },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'value' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'score' } },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'answer' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'content' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'score' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'value' } },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ScoringMutationMutation, ScoringMutationMutationVariables>;
 export const FetchLobbyDocument = {
   kind: 'Document',
   definitions: [
@@ -755,48 +876,66 @@ export const FetchLobbyDocument = {
                   name: { kind: 'Name', value: 'questions' },
                   selectionSet: {
                     kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'orderNumber' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'score' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'answers' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'content' } },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'owner' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                                ],
-                              },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'score' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'value' } },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'QuestionItem' } }],
                   },
                 },
               ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'AnswerItem' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Answer' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'owner' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'score' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'QuestionItem' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Question' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'orderNumber' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'score' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'answers' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'AnswerItem' } }],
             },
           },
         ],
