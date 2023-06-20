@@ -7,6 +7,7 @@ import { useParams } from 'react-router';
 import { useEffect } from 'react';
 import { LobbyStatus } from '../generated/graphql';
 import { Container } from './layouts/Container';
+import { Popup } from '../components/Popup';
 
 const CurrentQuestionSubscriptionDocument = graphql(`
   subscription CurrentQuestionSubscription($lobbyId: ID!) {
@@ -71,15 +72,19 @@ export const LobbyPage = () => {
   if (lobbyStatusData.lobbyStatus === LobbyStatus.Waiting)
     return (
       <Container>
-        <h2 className="text-2xl font-bold text-center">セッションの開始を待機中です</h2>
-        <Spinner />
+        <Popup
+          title="セッションはまだ始まっていません"
+          description="クイズセッションが始まると自動的に画面が切り替わります。このままお待ちください。"
+        />
+        <div className="py-8 text-gray-800">
+          <Spinner />
+        </div>
       </Container>
     );
   if (lobbyStatusData.lobbyStatus === LobbyStatus.Finished)
     return (
       <Container>
-        <h2 className="text-2xl font-bold text-center">セッションは終了しました</h2>
-        {/* TODO: 結果画面を用意する */}
+        <Popup title="セッションは終了しました" description="結果発表をお待ちください。" />
       </Container>
     );
   if (loading) return <div>Fetching</div>;
